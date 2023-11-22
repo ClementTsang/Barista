@@ -1,68 +1,72 @@
 import SwiftUI
 
+// From https://stackoverflow.com/a/74535684
+extension Array: RawRepresentable where Element: Codable {
+    public init?(rawValue: String) {
+        guard let data = rawValue.data(using: .utf8),
+              let result = try? JSONDecoder().decode([Element].self, from: data)
+        else {
+            return nil
+        }
+        self = result
+    }
+    
+    public var rawValue: String {
+        guard let data = try? JSONEncoder().encode(self),
+              let result = String(data: data, encoding: .utf8)
+        else {
+            return "[]"
+        }
+        return result
+    }
+}
+
+enum RunningState {
+    case started, running, stopped
+}
+
 func handleEnabled(isEnabled: Bool) {
     if isEnabled {
-        print("caffeinate is enabled")
         
-        if self.isCaffeinateRunning {
-            // If it is currently running, restart with current settings.
-            print("caffeinate is already running, restarting")
-            
-            // TODO: In this case, toggle off enabled for a second...
-        } else {
-            print("Starting caffeinate")
-        }
     } else {
-        print("caffeinate is disabled")
         
-        if self.isCaffeinateRunning {
-            // If it is currently running, stop it
-            print("caffeinate is running, stopping")
-        }
     }
 }
 
 @main
 struct baristaApp: App {
-    private var state = BaristaState()
+    @State var isCaffeinateEnabled = false
+    @State var isCaffeinateRunning = RunningState.stopped
     
-    init() {
-        // TODO: Pull from state
-        handleEnabled(isEnabled: self.state.isCaffeinateEnabled)
-    }
+    @AppStorage("canDisplaySleep")
+    var canDisplaySleep = false
+    
+    @AppStorage("canSystemIdleSleep")
+    var canSystemIdleSleep = false
+    
+    @AppStorage("canDiskIdleSleep")
+    var canDiskIdleSleep = false
+    
+    @AppStorage("canSystemSleepOnAC")
+    var canSystemSleepOnAC = false
+    
+    @AppStorage("preventSleep")
+    var preventSleep = false
+    
+    @AppStorage("preventSleepSeconds")
+    var preventSleepSeconds = 5
+    
+    @AppStorage("waitForPids")
+    var waitForPids = false
+    
+    @AppStorage("pids")
+    var pids: Array<Int> = []
     
     var body: some Scene {
         MenuBarExtra("Barista", systemImage: "cup.and.saucer.fill") {
-            BaristaMenu(state: state)
+            BaristaMenu(isCaffeinateEnabled: isCaffeinateEnabled, isCaffeinateRunning: isCaffeinateRunning,canDisplaySleep: canDisplaySleep, canSystemIdleSleep: canSystemIdleSleep, canDiskIdleSleep: canDiskIdleSleep, canSystemSleepOnAC: canSystemSleepOnAC, preventSleep: preventSleep, preventSleepSeconds: preventSleepSeconds, waitForPids: waitForPids, pids: pids)
         }.menuBarExtraStyle(.window)
     }
-}
-
-struct BaristaState {
-    @State var isCaffeinateEnabled = false
-    @State var isCaffeinateRunning = false
-    
-    // Corresponds to -d
-    @State var canDisplaySleep = false
-    
-    // Corresponds to -i
-    @State var canSystemIdleSleep = false
-    
-    // Corresponds to -m
-    @State var canDiskIdleSleep = false
-    
-    // Corresponds to -s
-    @State var canSystemSleepOnAC = false
-    
-    // Corresponds to -u
-    @State var preventSleep = false
-    
-    // Corresponds to -t
-    @State var preventSleepSeconds = 0
-    
-    // Corresponds to -w
-    @State var waitForPids = false
-    @State var pids: Array<Int> = []
 }
 
 struct MenuToggle : ToggleStyle {
@@ -83,7 +87,30 @@ struct BaristaMenu: View {
     // TODO: Enable on start of Barista?
     // TODO: Enable on start of system?
     
-    @State var state: BaristaState
+    @State var isCaffeinateEnabled: Bool
+    @State var isCaffeinateRunning: RunningState
+    
+    // Corresponds to -d
+    @State var canDisplaySleep: Bool
+    
+    // Corresponds to -i
+    @State var canSystemIdleSleep: Bool
+    
+    // Corresponds to -m
+    @State var canDiskIdleSleep: Bool
+    
+    // Corresponds to -s
+    @State var canSystemSleepOnAC: Bool
+    
+    // Corresponds to -u
+    @State var preventSleep: Bool
+    
+    // Corresponds to -t
+    @State var preventSleepSeconds: Int
+    
+    // Corresponds to -w
+    @State var waitForPids: Bool
+    @State var pids: Array<Int>
     
     private static let formatter: NumberFormatter = {
         let formatter = NumberFormatter()
@@ -95,25 +122,17 @@ struct BaristaMenu: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8){
-            Toggle("Prevent Display Sleep", isOn: state.$canDisplaySleep).toggleStyle(MenuToggle()).padding([.top], vertical_padding)
-            Toggle("Prevent Idle Sleep", isOn: state.$canSystemIdleSleep).toggleStyle(MenuToggle())
-            Toggle("Prevent Disks from Idle Sleep", isOn: state.$canDiskIdleSleep).toggleStyle(MenuToggle())
-            Toggle("Keep System Awake on AC", isOn: state.$canSystemSleepOnAC).toggleStyle(MenuToggle())
-            Toggle("Automatically Wake Computer", isOn: state.$preventSleep).toggleStyle(MenuToggle())
+            Toggle("Prevent Display Sleep", isOn: $canDisplaySleep).toggleStyle(MenuToggle()).padding([.top], vertical_padding)
+            Toggle("Prevent Idle Sleep", isOn: $canSystemIdleSleep).toggleStyle(MenuToggle())
+            Toggle("Prevent Disks from Idle Sleep", isOn: $canDiskIdleSleep).toggleStyle(MenuToggle())
+            Toggle("Keep System Awake on AC", isOn: $canSystemSleepOnAC).toggleStyle(MenuToggle())
+            Toggle("Automatically Wake Computer", isOn: $preventSleep).toggleStyle(MenuToggle())
             
             Divider()
             
-            let enableTogglePadding = if state.isCaffeinateRunning {
-                0.0
-            } else {
-                vertical_padding
-            }
+            let enableTogglePadding = vertical_padding
             
-            Toggle("Enable Barista", isOn: state.$isCaffeinateEnabled).toggleStyle(MenuToggle()).fontWeight(.bold).padding([.bottom], enableTogglePadding)
-            
-            if state.isCaffeinateRunning {
-                Text("Barista is running").padding([.bottom], vertical_padding).padding([.horizontal], 10.0)   .frame(maxWidth: .infinity, alignment: .center)
-            }
-        }.onChange(of: state.$isCaffeinateEnabled, perform: handleEnabled)
+            Toggle("Enable Barista", isOn: $isCaffeinateEnabled).toggleStyle(MenuToggle()).fontWeight(.bold).padding([.bottom], enableTogglePadding)
+        }.onChange(of: isCaffeinateEnabled, perform: handleEnabled)
     }
 }
