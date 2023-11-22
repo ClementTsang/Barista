@@ -1,2 +1,3 @@
-# barista
-A small frontend for macOS's `caffeinate`.
+# Barista
+
+A small tray frontend for macOS's `caffeinate`.
