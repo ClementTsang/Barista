@@ -141,7 +141,7 @@ struct BaristaMenu: View {
             if isCaffeinateEnabled {
                 let process = Process()
                 process.executableURL = URL(fileURLWithPath:"/bin/bash")
-                var arguments = ["-c", "caffeinate"]
+                var arguments = ["caffeinate"]
                 
                 if canDisplaySleep {
                     arguments.append("-d")
@@ -159,7 +159,9 @@ struct BaristaMenu: View {
                     arguments.append("-s")
                 }
                 
-                process.arguments = arguments
+                let caffeinateCommand = arguments.joined(separator: " ")
+                
+                process.arguments = ["-c", caffeinateCommand]
                 try? process.run()
                 
                 caffeinateRunState = CaffeinateState.starting(process)
