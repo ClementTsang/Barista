@@ -21,52 +21,22 @@ extension Array: RawRepresentable where Element: Codable {
     }
 }
 
-enum RunningState {
-    case started, running, stopped
-}
-
-func handleEnabled(isEnabled: Bool) {
-    if isEnabled {
-        
-    } else {
-        
-    }
+enum CaffeinateState: Equatable {
+    case starting(Process)
+    case running(Process)
+    case stopping(Process)
+    case stopped
 }
 
 @main
 struct baristaApp: App {
-    @State var isCaffeinateEnabled = false
-    @State var isCaffeinateRunning = RunningState.stopped
-    
-    @AppStorage("canDisplaySleep")
-    var canDisplaySleep = false
-    
-    @AppStorage("canSystemIdleSleep")
-    var canSystemIdleSleep = false
-    
-    @AppStorage("canDiskIdleSleep")
-    var canDiskIdleSleep = false
-    
-    @AppStorage("canSystemSleepOnAC")
-    var canSystemSleepOnAC = false
-    
-    @AppStorage("preventSleep")
-    var preventSleep = false
-    
-    @AppStorage("preventSleepSeconds")
-    var preventSleepSeconds = 5
-    
-    @AppStorage("waitForPids")
-    var waitForPids = false
-    
-    @AppStorage("pids")
-    var pids: Array<Int> = []
-    
     var body: some Scene {
         MenuBarExtra("Barista", systemImage: "cup.and.saucer.fill") {
-            BaristaMenu(isCaffeinateEnabled: isCaffeinateEnabled, isCaffeinateRunning: isCaffeinateRunning,canDisplaySleep: canDisplaySleep, canSystemIdleSleep: canSystemIdleSleep, canDiskIdleSleep: canDiskIdleSleep, canSystemSleepOnAC: canSystemSleepOnAC, preventSleep: preventSleep, preventSleepSeconds: preventSleepSeconds, waitForPids: waitForPids, pids: pids)
+            BaristaMenu()
         }.menuBarExtraStyle(.window)
     }
+    
+    // TODO: Kill caffeinate on app kill
 }
 
 struct MenuToggle : ToggleStyle {
@@ -87,30 +57,39 @@ struct BaristaMenu: View {
     // TODO: Enable on start of Barista?
     // TODO: Enable on start of system?
     
-    @State var isCaffeinateEnabled: Bool
-    @State var isCaffeinateRunning: RunningState
+    @State var isCaffeinateEnabled = false
+    @State var caffeinateRunState = CaffeinateState.stopped
     
     // Corresponds to -d
-    @State var canDisplaySleep: Bool
+    @AppStorage("canDisplaySleep")
+    var canDisplaySleep = false
     
     // Corresponds to -i
-    @State var canSystemIdleSleep: Bool
+    @AppStorage("canSystemIdleSleep")
+    var canSystemIdleSleep = false
     
     // Corresponds to -m
-    @State var canDiskIdleSleep: Bool
+    @AppStorage("canDiskIdleSleep")
+    var canDiskIdleSleep = false
     
     // Corresponds to -s
-    @State var canSystemSleepOnAC: Bool
+    @AppStorage("canSystemSleepOnAC")
+    var canSystemSleepOnAC = false
     
     // Corresponds to -u
-    @State var preventSleep: Bool
+    @AppStorage("preventSleep")
+    var preventSleep = false
     
     // Corresponds to -t
-    @State var preventSleepSeconds: Int
+    @AppStorage("preventSleepSeconds")
+    var preventSleepSeconds = 5
     
     // Corresponds to -w
-    @State var waitForPids: Bool
-    @State var pids: Array<Int>
+    @AppStorage("waitForPids")
+    var waitForPids = false
+    
+    @AppStorage("pids")
+    var pids: Array<Int> = []
     
     private static let formatter: NumberFormatter = {
         let formatter = NumberFormatter()
@@ -132,7 +111,98 @@ struct BaristaMenu: View {
             
             let enableTogglePadding = vertical_padding
             
-            Toggle("Enable Barista", isOn: $isCaffeinateEnabled).toggleStyle(MenuToggle()).fontWeight(.bold).padding([.bottom], enableTogglePadding)
-        }.onChange(of: isCaffeinateEnabled, perform: handleEnabled)
+            let baristaToggleDescription = if isCaffeinateEnabled {
+                switch (caffeinateRunState) {
+                case let .starting(process):
+                    "Barista is starting (\(process.processIdentifier))"
+                case let .running(process):
+                    "Barista is running (\(process.processIdentifier))"
+                case let .stopping(process):
+                    "Barista is stopping (\(process.processIdentifier))"
+                case .stopped:
+                    "Barista is off"
+                }
+            } else {
+                "Barista is off"
+            }
+            
+            VStack(alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/, content: {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Enable Barista").font(.system(size: 12)).fontWeight(.semibold)
+                        Text(baristaToggleDescription).font(.system(size: 10))
+                    }
+                    Spacer()
+                    Toggle("Enable Barista", isOn: $isCaffeinateEnabled).toggleStyle(.switch).labelsHidden()
+                }
+            })
+            .padding([.horizontal], 10.0).padding([.bottom], enableTogglePadding)
+        }.onChange(of: isCaffeinateEnabled, perform: { isCaffeinateEnabled in
+            if isCaffeinateEnabled {
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath:"/bin/bash")
+                var arguments = ["-c", "caffeinate"]
+                
+                if canDisplaySleep {
+                    arguments.append("-d")
+                }
+                
+                if canSystemIdleSleep {
+                    arguments.append("-i")
+                }
+                
+                if canDiskIdleSleep {
+                    arguments.append("-m")
+                }
+                
+                if canSystemSleepOnAC {
+                    arguments.append("-s")
+                }
+                
+                process.arguments = arguments
+                try? process.run()
+                
+                caffeinateRunState = CaffeinateState.starting(process)
+            } else {
+                switch(caffeinateRunState) {
+                case let .starting(process):
+                    caffeinateRunState = CaffeinateState.stopping(process)
+                case let .running(process):
+                    caffeinateRunState = CaffeinateState.stopping(process)
+                case .stopping(_):
+                    break
+                case .stopped:
+                    caffeinateRunState = CaffeinateState.stopped
+                }
+            }
+        }).onChange(of: caffeinateRunState, perform: { state in
+            switch (state) {
+            case let .starting(process):
+                if isCaffeinateEnabled {
+                    while !process.isRunning {}
+                    caffeinateRunState = CaffeinateState.running(process)
+                } else {
+                    process.terminate()
+                    while process.isRunning {}
+                    caffeinateRunState = CaffeinateState.stopped
+                }
+            case let .running(process):
+                if !isCaffeinateEnabled {
+                    process.terminate()
+                    while process.isRunning {}
+                    caffeinateRunState = CaffeinateState.stopped
+                }
+            case let .stopping(process):
+                if isCaffeinateEnabled {
+                    // TODO: Restart
+                } else {
+                    process.terminate()
+                    while process.isRunning {}
+                    caffeinateRunState = CaffeinateState.stopped
+                }
+            case .stopped:
+                break
+            }
+        })
     }
 }
