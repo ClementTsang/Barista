@@ -28,17 +28,6 @@ enum CaffeinateState: Equatable {
     case stopped
 }
 
-func dimmedImage(_ image: NSImage, alpha: CGFloat) -> NSImage {
-    let newImage = NSImage(size: image.size)
-    newImage.lockFocus()
-
-    let imageRect = NSRect(origin: .zero, size: image.size)
-    image.draw(in: imageRect, from: imageRect, operation: .sourceOver, fraction: alpha)
-
-    newImage.unlockFocus()
-    return newImage
-}
-
 @main
 struct baristaApp: App {
     @State var isCaffeinateEnabled = false
@@ -47,14 +36,8 @@ struct baristaApp: App {
         MenuBarExtra {
             BaristaMenu(isCaffeinateEnabled: isCaffeinateEnabled)
         } label: {
-            let baseImage = NSImage(systemSymbolName: "cup.and.saucer.fill", accessibilityDescription: nil)!
-            let image = if isCaffeinateEnabled {
-                baseImage
-            } else {
-                dimmedImage(baseImage, alpha: 0.5)
-            }
-            
-            Image(nsImage: image).disabled(true)
+            let image = NSImage(systemSymbolName: "cup.and.saucer.fill", accessibilityDescription: nil)
+            Image(nsImage: image!)
         }.menuBarExtraStyle(.window)
     }
     
