@@ -37,7 +37,7 @@ struct baristaApp: App {
             BaristaMenu(isCaffeinateEnabled: isCaffeinateEnabled)
         } label: {
             let image = NSImage(systemSymbolName: "cup.and.saucer.fill", accessibilityDescription: nil)
-            Image(nsImage: image!)
+            Image(nsImage: image!).bold()
         }.menuBarExtraStyle(.window)
     }
     
@@ -61,6 +61,8 @@ struct BaristaMenu: View {
     // TODO: Maybe support a list of PIDs/process names to automatically turn on?
     // TODO: Enable on start of Barista?
     // TODO: Enable on start of system?
+    
+    @Environment(\.openURL) private var openURL
     
     @State var isCaffeinateEnabled: Bool
     @State var caffeinateRunState = CaffeinateState.stopped
@@ -96,6 +98,10 @@ struct BaristaMenu: View {
     @AppStorage("pids")
     var pids: Array<Int> = []
     
+    @State private var quitHovered = false
+    @State private var githubHovered = false
+    @State private var donateHovered = false
+    
     private static let formatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -110,20 +116,18 @@ struct BaristaMenu: View {
             Toggle("Prevent Idle Sleep", isOn: $canSystemIdleSleep).toggleStyle(MenuToggle())
             Toggle("Prevent Disks from Idle Sleep", isOn: $canDiskIdleSleep).toggleStyle(MenuToggle())
             Toggle("Keep System Awake on AC", isOn: $canSystemSleepOnAC).toggleStyle(MenuToggle())
-            Toggle("Automatically Wake Computer", isOn: $preventSleep).toggleStyle(MenuToggle())
+            //            Toggle("Automatically Wake Computer", isOn: $preventSleep).toggleStyle(MenuToggle())
             
             Divider()
-            
-            let enableTogglePadding = vertical_padding
             
             let baristaToggleDescription = if isCaffeinateEnabled {
                 switch (caffeinateRunState) {
                 case let .starting(process):
-                    "Barista is starting (\(process.processIdentifier))"
+                    "Barista is starting (PID: \(process.processIdentifier))"
                 case let .running(process):
-                    "Barista is running (\(process.processIdentifier))"
+                    "Barista is running (PID: \(process.processIdentifier))"
                 case let .stopping(process):
-                    "Barista is stopping (\(process.processIdentifier))"
+                    "Barista is stopping (PID: \(process.processIdentifier))"
                 case .stopped:
                     "Barista is off"
                 }
@@ -141,7 +145,61 @@ struct BaristaMenu: View {
                     Toggle("Enable Barista", isOn: $isCaffeinateEnabled).toggleStyle(.switch).labelsHidden()
                 }
             })
-            .padding([.horizontal], 10.0).padding([.bottom], enableTogglePadding)
+            .padding([.horizontal], 10.0)
+            
+            Divider()
+            
+            HStack(alignment: .center, spacing: 8.0) {
+                Button(action: {
+                    openURL(URL(string: "https://github.com/ClementTsang/barista")!)
+                }) {
+                    Text("GitHub")
+                }.buttonStyle(.borderless)
+                    .tint(githubHovered ? .accentColor : .primary)
+                    .onHover(perform: { hovering in
+                        githubHovered = hovering
+                    })
+                
+                Divider().frame(height: 14)
+                
+                Button(action: {
+                    openURL(URL(string: "https://ko-fi.com/clementtsang")!)
+                }) {
+                    Text("Donate")
+                }.buttonStyle(.borderless)
+                    .tint(donateHovered ? .accentColor : .primary)
+                    .onHover(perform: { hovering in
+                        donateHovered = hovering
+                    })
+                
+                Divider().frame(height: 14)
+                
+                Button(action: {
+                    switch (caffeinateRunState) {
+                    case let .starting(process):
+                        process.terminate()
+                    case let .running(process):
+                        process.terminate()
+                    case let .stopping(process):
+                        process.terminate()
+                    case .stopped:
+                        break
+                    }
+                    NSApplication.shared.terminate(nil)
+                }) {
+                    Text("Quit")
+                }
+                .buttonStyle(.borderless)
+                .tint(quitHovered ? .accentColor : .primary)
+                .onHover(perform: { hovering in
+                    quitHovered = hovering
+                })
+            }
+            .frame(maxWidth: .infinity)
+            .padding([.horizontal], 8.0)
+            .padding([.bottom], vertical_padding)
+            
+            
         }.onChange(of: isCaffeinateEnabled, perform: { isCaffeinateEnabled in
             if isCaffeinateEnabled {
                 let process = Process()
