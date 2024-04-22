@@ -1,0 +1,28 @@
+name: Build barista
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+
+jobs:
+  build:
+    name: Build
+    runs-on: macOS
+    steps:
+    - name: Checkout repository
+      if: matrix.info.container == ''
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        fetch-depth: 1
+
+    - name: Build
+      run: xcodebuild -scheme barista -configuration Pre -derivedDataPath "$RUNNER_TEMP/DerivedData" -archivePath "$RUNNER_TEMP/CodeEdit.xcarchive" -skipPackagePluginValidation archive
+
+    - name: Create DMG
+      run: |
+        create-dmg \
+          --volname "barista" \
+          "$RUNNER_TEMP/CodeEdit.dmg" \
+          "$RUNNER_TEMP/CodeEdit.xcarchive/Products/Applications/"
+
