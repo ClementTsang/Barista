@@ -20,4 +20,13 @@ jobs:
           fetch-depth: 1
 
       - name: Build
-        run: xcodebuild -scheme barista -configuration Pre -derivedDataPath "$RUNNER_TEMP/DerivedData" -archivePath "$RUNNER_TEMP/CodeEdit.xcarchive" -skipPackagePluginValidation archive
+        run: |
+          mkdir ./release
+          xcodebuild -scheme barista -configuration Pre -derivedDataPath "release/DerivedData" -archivePath "release/CodeEdit.xcarchive" -skipPackagePluginValidation archive
+
+      - name: Save release as artifact
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
+        with:
+          retention-days: 3
+          name: release
+          path: release
