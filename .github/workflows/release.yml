@@ -29,7 +29,7 @@ jobs:
         run: |
           npm install --global create-dmg
           mkdir release
-          create-dmg "build_artifacts/Barista.app" "release"
+          create-dmg "build_artifacts/Barista.xcarchive/Products/Applications/Barista.app" "release"
 
       - name: Print out all release files
         run: |
