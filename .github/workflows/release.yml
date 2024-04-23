@@ -15,7 +15,7 @@ jobs:
 
   upload-release:
     name: upload-release
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     needs: [build-release]
     steps:
       - name: Get build artifacts
