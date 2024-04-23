@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: |
           mkdir ./build_artifacts
-          xcodebuild -scheme Barista -derivedDataPath "build_artifacts/DerivedData" -archivePath "build_artifacts/Barista.xcarchive" -skipPackagePluginValidation archive
+          xcodebuild -scheme Barista -configuration Release -derivedDataPath "build_artifacts/DerivedData" -archivePath "build_artifacts/Barista.xcarchive" -skipPackagePluginValidation archive
 
       - name: Save build as artifact
         if: inputs.save
