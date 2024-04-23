@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  barista
+//  Barista
 //
 //  Created by Clement Tsang on 2023-11-20.
 //

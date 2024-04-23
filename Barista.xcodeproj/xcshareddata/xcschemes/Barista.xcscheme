@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1500"
+   LastUpgradeVersion = "1530"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A49ADD1F2B0C607500166231"
-               BuildableName = "barista.app"
-               BlueprintName = "barista"
-               ReferencedContainer = "container:barista.xcodeproj">
+               BuildableName = "Barista.app"
+               BlueprintName = "Barista"
+               ReferencedContainer = "container:Barista.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,9 +35,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A49ADD302B0C607600166231"
-               BuildableName = "baristaTests.xctest"
-               BlueprintName = "baristaTests"
-               ReferencedContainer = "container:barista.xcodeproj">
+               BuildableName = "BaristaTests.xctest"
+               BlueprintName = "BaristaTests"
+               ReferencedContainer = "container:Barista.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -46,9 +46,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A49ADD3A2B0C607600166231"
-               BuildableName = "baristaUITests.xctest"
-               BlueprintName = "baristaUITests"
-               ReferencedContainer = "container:barista.xcodeproj">
+               BuildableName = "BaristaUITests.xctest"
+               BlueprintName = "BaristaUITests"
+               ReferencedContainer = "container:Barista.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -68,9 +68,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A49ADD1F2B0C607500166231"
-            BuildableName = "barista.app"
-            BlueprintName = "barista"
-            ReferencedContainer = "container:barista.xcodeproj">
+            BuildableName = "Barista.app"
+            BlueprintName = "Barista"
+            ReferencedContainer = "container:Barista.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -85,9 +85,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A49ADD1F2B0C607500166231"
-            BuildableName = "barista.app"
-            BlueprintName = "barista"
-            ReferencedContainer = "container:barista.xcodeproj">
+            BuildableName = "Barista.app"
+            BlueprintName = "Barista"
+            ReferencedContainer = "container:Barista.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

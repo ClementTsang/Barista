@@ -1,0 +1,33 @@
+name: Build Barista
+
+on:
+  workflow_call:
+    inputs:
+      save:
+        description: "Whether to save as an artifact."
+        default: false
+        required: false
+        type: boolean
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 1
+
+      - name: Build
+        run: |
+          mkdir ./build_artifacts
+          xcodebuild -scheme Barista -configuration Release -derivedDataPath "build_artifacts/DerivedData" -archivePath "build_artifacts/Barista.xcarchive" -skipPackagePluginValidation archive
+
+      - name: Save build as artifact
+        if: inputs.save
+        uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
+        with:
+          retention-days: 3
+          name: build_artifacts
+          path: build_artifacts

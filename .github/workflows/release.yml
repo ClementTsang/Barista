@@ -1,0 +1,76 @@
+# Builds and releases a .dmg file.
+
+name: Release Barista
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    uses: ./.github/workflows/build.yml
+    with:
+      save: true
+
+  upload-release:
+    name: upload-release
+    runs-on: macos-14
+    needs: [build-release]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 1
+
+      - name: Get app version and build number
+        run: |
+          APP_VERSION=$(xcrun agvtool mvers -terse1)
+          APP_BUILD=$(xcrun agvtool vers -terse)
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+          echo "APP_BUILD=$APP_BUILD" >> $GITHUB_ENV
+
+      - name: Get build artifacts
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        with:
+          pattern: build_artifacts
+          path: build_artifacts
+          merge-multiple: true
+
+      - name: Generate dmg
+        run: |
+          npm install --global create-dmg
+          mkdir release
+          create-dmg "build_artifacts/Barista.xcarchive/Products/Applications/Barista.app" "release" || true
+
+      - name: Print out all release files
+        run: |
+          echo "Generated $(ls ./release | wc -l) files:"
+          du -h -d 0 ./release/*
+
+      - name: Create release and add release files
+        uses: softprops/action-gh-release@20e085ccc73308c2c8e43ab8da4f8d7ecbb94d4e # 2.0.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: false
+          tag_name: ${{ env.APP_VERSION }}-${{env.APP_BUILD}}
+          draft: true
+          fail_on_unmatched_files: true
+          name: ${{ env.APP_VERSION }}-${{env.APP_BUILD}} Release
+          body: |
+            <!-- Write summary here -->
+
+            ---
+
+            ## Bug Fixes
+              
+            ## Features
+              
+            ## Changes
+
+            ## Other
+
+            ## Internal Changes
+          files: |
+            ./release/*

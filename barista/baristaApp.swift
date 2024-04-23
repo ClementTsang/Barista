@@ -29,7 +29,7 @@ enum CaffeinateState: Equatable {
 }
 
 @main
-struct baristaApp: App {
+struct BaristaApp: App {
     @State var isCaffeinateEnabled = false
     
     var body: some Scene {
@@ -120,7 +120,7 @@ struct BaristaMenu: View {
             
             Divider()
             
-            let baristaToggleDescription = if isCaffeinateEnabled {
+            let BaristaToggleDescription = if isCaffeinateEnabled {
                 switch (caffeinateRunState) {
                 case let .starting(process):
                     "Barista is starting (PID: \(process.processIdentifier))"
@@ -139,7 +139,7 @@ struct BaristaMenu: View {
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Enable Barista").font(.system(size: 12)).fontWeight(.semibold)
-                        Text(baristaToggleDescription).font(.system(size: 10))
+                        Text(BaristaToggleDescription).font(.system(size: 10))
                     }
                     Spacer()
                     Toggle("Enable Barista", isOn: $isCaffeinateEnabled).toggleStyle(.switch).labelsHidden()
@@ -151,7 +151,7 @@ struct BaristaMenu: View {
             
             HStack(alignment: .center, spacing: 8.0) {
                 Button(action: {
-                    openURL(URL(string: "https://github.com/ClementTsang/barista")!)
+                    openURL(URL(string: "https://github.com/ClementTsang/Barista")!)
                 }) {
                     Text("GitHub")
                 }.buttonStyle(.borderless)

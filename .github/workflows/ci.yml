@@ -1,0 +1,14 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-build:
+    uses: ./.github/workflows/build.yml
+    with:
+      save: false

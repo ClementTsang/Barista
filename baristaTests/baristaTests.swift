@@ -1,14 +1,14 @@
 //
-//  baristaTests.swift
-//  baristaTests
+//  BaristaTests.swift
+//  BaristaTests
 //
 //  Created by Clement Tsang on 2023-11-20.
 //
 
 import XCTest
-@testable import barista
+@testable import Barista
 
-final class baristaTests: XCTestCase {
+final class BaristaTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
