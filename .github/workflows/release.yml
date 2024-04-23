@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   build-release:
     uses: ./.github/workflows/build.yml
