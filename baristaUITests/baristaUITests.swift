@@ -1,13 +1,13 @@
 //
-//  baristaUITests.swift
-//  baristaUITests
+//  BaristaUITests.swift
+//  BaristaUITests
 //
 //  Created by Clement Tsang on 2023-11-20.
 //
 
 import XCTest
 
-final class baristaUITests: XCTestCase {
+final class BaristaUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

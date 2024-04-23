@@ -1,13 +1,13 @@
 //
-//  baristaUITestsLaunchTests.swift
-//  baristaUITests
+//  BaristaUITestsLaunchTests.swift
+//  BaristaUITests
 //
 //  Created by Clement Tsang on 2023-11-20.
 //
 
 import XCTest
 
-final class baristaUITestsLaunchTests: XCTestCase {
+final class BaristaUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

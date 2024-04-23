@@ -1,12 +1,13 @@
-name: Build barista
+name: Build Barista
 
 on:
-  workflow_dispatch:
   workflow_call:
-  pull_request:
-  push:
-    branches:
-      - main
+    inputs:
+      save:
+        description: "Whether to save as an artifact."
+        default: false
+        required: false
+        type: boolean
 
 jobs:
   build:
@@ -14,19 +15,19 @@ jobs:
     runs-on: macos-14
     steps:
       - name: Checkout repository
-        if: matrix.info.container == ''
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 1
 
       - name: Build
         run: |
-          mkdir ./release
-          xcodebuild -scheme barista -configuration Pre -derivedDataPath "release/DerivedData" -archivePath "release/CodeEdit.xcarchive" -skipPackagePluginValidation archive
+          mkdir ./build_artifacts
+          xcodebuild -scheme Barista -derivedDataPath "build_artifacts/DerivedData" -archivePath "build_artifacts/Barista.xcarchive" -skipPackagePluginValidation archive
 
-      - name: Save release as artifact
+      - name: Save build as artifact
+        if: inputs.save
         uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           retention-days: 3
-          name: release
-          path: release
+          name: build_artifacts
+          path: build_artifacts
