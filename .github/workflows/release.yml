@@ -26,8 +26,8 @@ jobs:
 
       - name: Get app version and build number
         run: |
-          APP_VERSION=$(xcrun agvtool mvers -terse1)
-          APP_BUILD=$(xcrun agvtool vers -terse)
+          APP_VERSION=$(xcrun agvtool mvers -terse1 | tail -n1)
+          APP_BUILD=$(xcrun agvtool vers -terse | tail -n1)
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
           echo "APP_BUILD=$APP_BUILD" >> $GITHUB_ENV
 
