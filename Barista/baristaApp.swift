@@ -33,10 +33,11 @@ struct BaristaApp: App {
     @State var isCaffeinateEnabled = false
     
     var body: some Scene {
-        MenuBarExtra {
-            BaristaMenu(isCaffeinateEnabled: isCaffeinateEnabled)
+        MenuBarExtra() {
+            BaristaMenu(isCaffeinateEnabled: $isCaffeinateEnabled)
         } label: {
-            let image = NSImage(systemSymbolName: "cup.and.saucer.fill", accessibilityDescription: nil)
+            let icon = isCaffeinateEnabled ? "cup.and.saucer.fill" : "cup.and.saucer"
+            let image = NSImage(systemSymbolName: icon, accessibilityDescription: nil)
             Image(nsImage: image!).bold()
         }.menuBarExtraStyle(.window)
     }
@@ -64,7 +65,7 @@ struct BaristaMenu: View {
     
     @Environment(\.openURL) private var openURL
     
-    @State var isCaffeinateEnabled: Bool
+    @Binding var isCaffeinateEnabled: Bool
     @State var caffeinateRunState = CaffeinateState.stopped
     
     // Corresponds to -d
@@ -83,20 +84,23 @@ struct BaristaMenu: View {
     @AppStorage("canSystemSleepOnAC")
     var canSystemSleepOnAC = false
     
-    // Corresponds to -u
-    @AppStorage("preventSleep")
-    var preventSleep = false
+    //    // Corresponds to -u
+    //    @AppStorage("preventSleep")
+    //    var preventSleep = false
+    //
+    //    // Corresponds to -t
+    //    @AppStorage("preventSleepSeconds")
+    //    var preventSleepSeconds = 5
     
-    // Corresponds to -t
-    @AppStorage("preventSleepSeconds")
-    var preventSleepSeconds = 5
+    //    // Corresponds to -w
+    //    @AppStorage("waitForPids")
+    //    var waitForPids = false
+    //
+    //    @AppStorage("pids")
+    //    var pids: Array<Int> = []
     
-    // Corresponds to -w
-    @AppStorage("waitForPids")
-    var waitForPids = false
-    
-    @AppStorage("pids")
-    var pids: Array<Int> = []
+//    @AppStorage("disableWhenNotOnAC")
+//    var disableWhenNotOnAC = false
     
     @State private var quitHovered = false
     @State private var githubHovered = false
@@ -116,7 +120,8 @@ struct BaristaMenu: View {
             Toggle("Prevent Idle Sleep", isOn: $canSystemIdleSleep).toggleStyle(MenuToggle())
             Toggle("Prevent Disks from Idle Sleep", isOn: $canDiskIdleSleep).toggleStyle(MenuToggle())
             Toggle("Keep System Awake on AC", isOn: $canSystemSleepOnAC).toggleStyle(MenuToggle())
-            //            Toggle("Automatically Wake Computer", isOn: $preventSleep).toggleStyle(MenuToggle())
+            // Toggle("Automatically Wake Computer", isOn: $preventSleep).toggleStyle(MenuToggle())
+            // Toggle("Disable When Not on AC", isOn: $disableWhenNotOnAC).toggleStyle(MenuToggle())
             
             Divider()
             
