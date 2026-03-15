@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		A49ADD242B0C607500166231 /* BaristaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49ADD232B0C607500166231 /* BaristaApp.swift */; };
-		A49ADD262B0C607500166231 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49ADD252B0C607500166231 /* ContentView.swift */; };
 		A49ADD282B0C607600166231 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A49ADD272B0C607600166231 /* Assets.xcassets */; };
 		A49ADD2B2B0C607600166231 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A49ADD2A2B0C607600166231 /* Preview Assets.xcassets */; };
 		A49ADD362B0C607600166231 /* BaristaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49ADD352B0C607600166231 /* BaristaTests.swift */; };
@@ -36,7 +35,6 @@
 /* Begin PBXFileReference section */
 		A49ADD202B0C607500166231 /* Barista.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Barista.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A49ADD232B0C607500166231 /* BaristaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaristaApp.swift; sourceTree = "<group>"; };
-		A49ADD252B0C607500166231 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A49ADD272B0C607600166231 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A49ADD2A2B0C607600166231 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A49ADD2C2B0C607600166231 /* Barista.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Barista.entitlements; sourceTree = "<group>"; };
@@ -98,7 +96,6 @@
 			children = (
 				A49ADD4E2B0CAC9100166231 /* Info.plist */,
 				A49ADD232B0C607500166231 /* BaristaApp.swift */,
-				A49ADD252B0C607500166231 /* ContentView.swift */,
 				A49ADD272B0C607600166231 /* Assets.xcassets */,
 				A49ADD2C2B0C607600166231 /* Barista.entitlements */,
 				A49ADD292B0C607600166231 /* Preview Content */,
@@ -261,7 +258,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A49ADD262B0C607500166231 /* ContentView.swift in Sources */,
 				A49ADD242B0C607500166231 /* BaristaApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
