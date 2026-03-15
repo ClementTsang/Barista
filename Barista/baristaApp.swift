@@ -1,7 +1,7 @@
 import SwiftUI
 
 // From https://stackoverflow.com/a/74535684
-extension Array: @retroactive RawRepresentable where Element: Codable {
+extension Array: RawRepresentable where Element: Codable {
   public init?(rawValue: String) {
     guard let data = rawValue.data(using: .utf8),
       let result = try? JSONDecoder().decode([Element].self, from: data)
