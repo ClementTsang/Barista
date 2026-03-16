@@ -10,9 +10,6 @@
 		A49ADD242B0C607500166231 /* BaristaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49ADD232B0C607500166231 /* BaristaApp.swift */; };
 		A49ADD282B0C607600166231 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A49ADD272B0C607600166231 /* Assets.xcassets */; };
 		A49ADD2B2B0C607600166231 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A49ADD2A2B0C607600166231 /* Preview Assets.xcassets */; };
-		A49ADD362B0C607600166231 /* BaristaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49ADD352B0C607600166231 /* BaristaTests.swift */; };
-		A49ADD402B0C607600166231 /* BaristaUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49ADD3F2B0C607600166231 /* BaristaUITests.swift */; };
-		A49ADD422B0C607600166231 /* BaristaUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49ADD412B0C607600166231 /* BaristaUITestsLaunchTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,10 +36,7 @@
 		A49ADD2A2B0C607600166231 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A49ADD2C2B0C607600166231 /* Barista.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Barista.entitlements; sourceTree = "<group>"; };
 		A49ADD312B0C607600166231 /* BaristaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BaristaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A49ADD352B0C607600166231 /* BaristaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaristaTests.swift; sourceTree = "<group>"; };
 		A49ADD3B2B0C607600166231 /* BaristaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BaristaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A49ADD3F2B0C607600166231 /* BaristaUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaristaUITests.swift; sourceTree = "<group>"; };
-		A49ADD412B0C607600166231 /* BaristaUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaristaUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		A49ADD4E2B0CAC9100166231 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,8 +69,6 @@
 			isa = PBXGroup;
 			children = (
 				A49ADD222B0C607500166231 /* Barista */,
-				A49ADD342B0C607600166231 /* BaristaTests */,
-				A49ADD3E2B0C607600166231 /* BaristaUITests */,
 				A49ADD212B0C607500166231 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -109,23 +101,6 @@
 				A49ADD2A2B0C607600166231 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		A49ADD342B0C607600166231 /* BaristaTests */ = {
-			isa = PBXGroup;
-			children = (
-				A49ADD352B0C607600166231 /* BaristaTests.swift */,
-			);
-			path = BaristaTests;
-			sourceTree = "<group>";
-		};
-		A49ADD3E2B0C607600166231 /* BaristaUITests */ = {
-			isa = PBXGroup;
-			children = (
-				A49ADD3F2B0C607600166231 /* BaristaUITests.swift */,
-				A49ADD412B0C607600166231 /* BaristaUITestsLaunchTests.swift */,
-			);
-			path = BaristaUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -266,7 +241,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A49ADD362B0C607600166231 /* BaristaTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,8 +248,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A49ADD402B0C607600166231 /* BaristaUITests.swift in Sources */,
-				A49ADD422B0C607600166231 /* BaristaUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,7 +397,7 @@
 				CODE_SIGN_ENTITLEMENTS = Barista/Barista.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Barista/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
@@ -457,7 +429,7 @@
 				CODE_SIGN_ENTITLEMENTS = Barista/Barista.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Barista/Preview Content\"";
 				ENABLE_APP_SANDBOX = YES;
