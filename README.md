@@ -1,6 +1,6 @@
 # Barista
 
-A small tray frontend for macOS's `caffeinate`.
+A small tray frontend for macOS's `caffeinate`, a utility to keep your device awake.
 
 Note: currently does not replicate 100% of the features of `caffeinate`.
 
