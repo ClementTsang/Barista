@@ -2,7 +2,7 @@
 
 A small tray frontend for macOS's `caffeinate`, a utility to keep your device awake.
 
-Note: currently does not replicate 100% of the features of `caffeinate`.
+Note: Barista currently does not replicate 100% of the features of `caffeinate`, though this may change in the future!
 
 <img width="662" alt="image" src="https://github.com/ClementTsang/Barista/assets/34804052/4474fc98-41b8-4f0d-8e9d-831393143923">
 
