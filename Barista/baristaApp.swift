@@ -28,15 +28,92 @@ enum CaffeinateState: Equatable {
   case stopped
 }
 
+final class CaffeinateController: ObservableObject {
+  @Published var isEnabled: Bool {
+    didSet {
+      if isEnabled {
+        start()
+      } else {
+        stop()
+      }
+    }
+  }
+
+  @Published private(set) var runState = CaffeinateState.stopped
+
+  private var process: Process?
+
+  init() {
+    isEnabled = UserDefaults.standard.bool(forKey: "enableOnStartup")
+
+    if isEnabled {
+      start()
+    }
+  }
+
+  private func stop() {
+    guard let process else {
+      runState = .stopped
+      return
+    }
+
+    runState = .stopping(process)
+    process.terminate()
+    process.waitUntilExit()
+    self.process = nil
+    runState = .stopped
+  }
+
+  private func start() {
+    guard process == nil else {
+      return
+    }
+
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: "/bin/bash")
+    var arguments = ["caffeinate"]
+    let defaults = UserDefaults.standard
+
+    if defaults.bool(forKey: "canDisplaySleep") {
+      arguments.append("-d")
+    }
+
+    if defaults.bool(forKey: "canSystemIdleSleep") {
+      arguments.append("-i")
+    }
+
+    if defaults.bool(forKey: "canDiskIdleSleep") {
+      arguments.append("-m")
+    }
+
+    if defaults.bool(forKey: "canSystemSleepOnAC") {
+      arguments.append("-s")
+    }
+
+    process.arguments = ["-c", arguments.joined(separator: " ")]
+    self.process = process
+    runState = .starting(process)
+
+    do {
+      try process.run()
+      runState = .running(process)
+    } catch {
+      self.process = nil
+      runState = .stopped
+      isEnabled = false
+    }
+  }
+}
+
 @main
 struct BaristaApp: App {
-  @State var isCaffeinateEnabled = false
+  @StateObject private var caffeinateController = CaffeinateController()
 
   var body: some Scene {
     MenuBarExtra {
-      BaristaMenu(isCaffeinateEnabled: $isCaffeinateEnabled)
+      BaristaMenu(caffeinateController: caffeinateController)
     } label: {
-      let icon = isCaffeinateEnabled ? "cup.and.saucer.fill" : "cup.and.saucer"
+      let icon = caffeinateController.isEnabled ? "cup.and.saucer.fill" : "cup.and.saucer"
       let image = NSImage(systemSymbolName: icon, accessibilityDescription: nil)
       Image(nsImage: image!).bold()
     }.menuBarExtraStyle(.window)
@@ -63,13 +140,10 @@ struct MenuToggle: ToggleStyle {
 
 struct BaristaMenu: View {
   // TODO: Maybe support a list of PIDs/process names to automatically turn on?
-  // TODO: Enable on start of Barista?
-  // TODO: Enable on start of system?
 
   @Environment(\.openURL) private var openURL
 
-  @Binding var isCaffeinateEnabled: Bool
-  @State var caffeinateRunState = CaffeinateState.stopped
+  @ObservedObject var caffeinateController: CaffeinateController
 
   // Corresponds to -d
   @AppStorage("canDisplaySleep")
@@ -86,6 +160,9 @@ struct BaristaMenu: View {
   // Corresponds to -s
   @AppStorage("canSystemSleepOnAC")
   var canSystemSleepOnAC = false
+
+  @AppStorage("enableOnStartup")
+  var enableOnStartup = false
 
   //    // Corresponds to -u
   //    @AppStorage("preventSleep")
@@ -124,19 +201,20 @@ struct BaristaMenu: View {
       Toggle("Prevent Idle Sleep", isOn: $canSystemIdleSleep).toggleStyle(MenuToggle())
       Toggle("Prevent Disks from Idle Sleep", isOn: $canDiskIdleSleep).toggleStyle(MenuToggle())
       Toggle("Keep System Awake on AC", isOn: $canSystemSleepOnAC).toggleStyle(MenuToggle())
+      Toggle("Enable on Startup", isOn: $enableOnStartup).toggleStyle(MenuToggle())
       // Toggle("Automatically Wake Computer", isOn: $preventSleep).toggleStyle(MenuToggle())
       // Toggle("Disable When Not on AC", isOn: $disableWhenNotOnAC).toggleStyle(MenuToggle())
 
       Divider()
 
       let BaristaToggleDescription =
-        if isCaffeinateEnabled {
-          switch caffeinateRunState {
-          case let .starting(process):
+        if caffeinateController.isEnabled {
+          switch caffeinateController.runState {
+          case .starting(let process):
             "Barista is starting (PID: \(process.processIdentifier))"
-          case let .running(process):
+          case .running(let process):
             "Barista is running (PID: \(process.processIdentifier))"
-          case let .stopping(process):
+          case .stopping(let process):
             "Barista is stopping (PID: \(process.processIdentifier))"
           case .stopped:
             "Barista is off"
@@ -154,7 +232,8 @@ struct BaristaMenu: View {
               Text(BaristaToggleDescription).font(.system(size: 10))
             }
             Spacer()
-            Toggle("Enable Barista", isOn: $isCaffeinateEnabled).toggleStyle(.switch).labelsHidden()
+            Toggle("Enable Barista", isOn: $caffeinateController.isEnabled).toggleStyle(.switch)
+              .labelsHidden()
           }
         }
       )
@@ -188,16 +267,7 @@ struct BaristaMenu: View {
         Divider().frame(height: 14)
 
         Button(action: {
-          switch caffeinateRunState {
-          case let .starting(process):
-            process.terminate()
-          case let .running(process):
-            process.terminate()
-          case let .stopping(process):
-            process.terminate()
-          case .stopped:
-            break
-          }
+          caffeinateController.isEnabled = false
           NSApplication.shared.terminate(nil)
         }) {
           Text("Quit")
@@ -211,80 +281,6 @@ struct BaristaMenu: View {
       .frame(maxWidth: .infinity)
       .padding([.horizontal], 8.0)
       .padding([.bottom], vertical_padding)
-
-    }.onChange(
-      of: isCaffeinateEnabled,
-      perform: { isCaffeinateEnabled in
-        if isCaffeinateEnabled {
-          let process = Process()
-          process.executableURL = URL(fileURLWithPath: "/bin/bash")
-          var arguments = ["caffeinate"]
-
-          if canDisplaySleep {
-            arguments.append("-d")
-          }
-
-          if canSystemIdleSleep {
-            arguments.append("-i")
-          }
-
-          if canDiskIdleSleep {
-            arguments.append("-m")
-          }
-
-          if canSystemSleepOnAC {
-            arguments.append("-s")
-          }
-
-          let caffeinateCommand = arguments.joined(separator: " ")
-
-          process.arguments = ["-c", caffeinateCommand]
-          try? process.run()
-
-          caffeinateRunState = CaffeinateState.starting(process)
-        } else {
-          switch caffeinateRunState {
-          case let .starting(process):
-            caffeinateRunState = CaffeinateState.stopping(process)
-          case let .running(process):
-            caffeinateRunState = CaffeinateState.stopping(process)
-          case .stopping(_):
-            break
-          case .stopped:
-            caffeinateRunState = CaffeinateState.stopped
-          }
-        }
-      }
-    ).onChange(
-      of: caffeinateRunState,
-      perform: { state in
-        switch state {
-        case let .starting(process):
-          if isCaffeinateEnabled {
-            while !process.isRunning {}
-            caffeinateRunState = CaffeinateState.running(process)
-          } else {
-            process.terminate()
-            while process.isRunning {}
-            caffeinateRunState = CaffeinateState.stopped
-          }
-        case let .running(process):
-          if !isCaffeinateEnabled {
-            process.terminate()
-            while process.isRunning {}
-            caffeinateRunState = CaffeinateState.stopped
-          }
-        case let .stopping(process):
-          if isCaffeinateEnabled {
-            // TODO: Restart
-          } else {
-            process.terminate()
-            while process.isRunning {}
-            caffeinateRunState = CaffeinateState.stopped
-          }
-        case .stopped:
-          break
-        }
-      })
+    }
   }
 }
