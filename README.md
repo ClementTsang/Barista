@@ -10,4 +10,5 @@ Note: Barista currently does not replicate 100% of the features of `caffeinate`,
 
 Download the DMG from the releases and install it. You can then run it by running Barista.
 
-To activate it, just toggle the "Enable Barista" slider. Turn it off by toggling it back off.
+To activate it, just toggle the "Enable Barista" slider. Turn it off by toggling it back off. Use
+"Enable on Startup" to activate it automatically whenever Barista starts.
