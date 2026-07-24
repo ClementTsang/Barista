@@ -41,6 +41,7 @@ jobs:
       - name: Generate dmg
         run: |
           npm install --global create-dmg
+          tar -xzf build_artifacts/Barista.xcarchive.tar.gz -C build_artifacts
           mkdir release
           create-dmg "build_artifacts/Barista.xcarchive/Products/Applications/Barista.app" "release" || true
 

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file. The format 
 
 ---
 
+## 1.1-2 (2026-07-24)
+
+### Internal Changes
+
+- Rebuild app.
+
 ## 1.1-1 (2026-07-23)
 
 ### Features
