@@ -27,10 +27,17 @@ jobs:
           mkdir ./build_artifacts
           xcodebuild -scheme Barista -configuration Release -derivedDataPath "build_artifacts/DerivedData" -archivePath "build_artifacts/Barista.xcarchive" -skipPackagePluginValidation archive
 
+      # Tar the archive before uploading: actions/upload-artifact zips its
+      # contents and does not preserve Unix permissions, which strips the
+      # executable bit off the app binary. A tarball keeps permissions intact.
+      - name: Package archive
+        if: inputs.save
+        run: tar -czf Barista.xcarchive.tar.gz -C build_artifacts Barista.xcarchive
+
       - name: Save build as artifact
         if: inputs.save
         uses: actions/upload-artifact@26f96dfa697d77e81fd5907df203aa23a56210a8 # v4.3.0
         with:
           retention-days: 3
           name: build_artifacts
-          path: build_artifacts
+          path: Barista.xcarchive.tar.gz
