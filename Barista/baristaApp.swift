@@ -39,14 +39,49 @@ final class CaffeinateController: ObservableObject {
     }
   }
 
+  // Corresponds to -d
+  @Published var canDisplaySleep: Bool {
+    didSet { settingChanged(key: "canDisplaySleep", value: canDisplaySleep) }
+  }
+
+  // Corresponds to -i
+  @Published var canSystemIdleSleep: Bool {
+    didSet { settingChanged(key: "canSystemIdleSleep", value: canSystemIdleSleep) }
+  }
+
+  // Corresponds to -m
+  @Published var canDiskIdleSleep: Bool {
+    didSet { settingChanged(key: "canDiskIdleSleep", value: canDiskIdleSleep) }
+  }
+
+  // Corresponds to -s
+  @Published var canSystemSleepOnAC: Bool {
+    didSet { settingChanged(key: "canSystemSleepOnAC", value: canSystemSleepOnAC) }
+  }
+
   @Published private(set) var runState = CaffeinateState.stopped
 
   private var process: Process?
 
   init() {
-    isEnabled = UserDefaults.standard.bool(forKey: "enableOnStartup")
+    let defaults = UserDefaults.standard
+    canDisplaySleep = defaults.bool(forKey: "canDisplaySleep")
+    canSystemIdleSleep = defaults.bool(forKey: "canSystemIdleSleep")
+    canDiskIdleSleep = defaults.bool(forKey: "canDiskIdleSleep")
+    canSystemSleepOnAC = defaults.bool(forKey: "canSystemSleepOnAC")
+    isEnabled = defaults.bool(forKey: "enableOnStartup")
 
     if isEnabled {
+      start()
+    }
+  }
+
+  // Change the setting, and then restart the process if it is currently enabled.
+  private func settingChanged(key: String, value: Bool) {
+    UserDefaults.standard.set(value, forKey: key)
+
+    if isEnabled {
+      stop()
       start()
     }
   }
@@ -72,21 +107,20 @@ final class CaffeinateController: ObservableObject {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/bin/bash")
     var arguments = ["caffeinate"]
-    let defaults = UserDefaults.standard
 
-    if defaults.bool(forKey: "canDisplaySleep") {
+    if canDisplaySleep {
       arguments.append("-d")
     }
 
-    if defaults.bool(forKey: "canSystemIdleSleep") {
+    if canSystemIdleSleep {
       arguments.append("-i")
     }
 
-    if defaults.bool(forKey: "canDiskIdleSleep") {
+    if canDiskIdleSleep {
       arguments.append("-m")
     }
 
-    if defaults.bool(forKey: "canSystemSleepOnAC") {
+    if canSystemSleepOnAC {
       arguments.append("-s")
     }
 
@@ -145,22 +179,6 @@ struct BaristaMenu: View {
 
   @ObservedObject var caffeinateController: CaffeinateController
 
-  // Corresponds to -d
-  @AppStorage("canDisplaySleep")
-  var canDisplaySleep = false
-
-  // Corresponds to -i
-  @AppStorage("canSystemIdleSleep")
-  var canSystemIdleSleep = false
-
-  // Corresponds to -m
-  @AppStorage("canDiskIdleSleep")
-  var canDiskIdleSleep = false
-
-  // Corresponds to -s
-  @AppStorage("canSystemSleepOnAC")
-  var canSystemSleepOnAC = false
-
   @AppStorage("enableOnStartup")
   var enableOnStartup = false
 
@@ -196,11 +214,10 @@ struct BaristaMenu: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
-      Toggle("Prevent Display Sleep", isOn: $canDisplaySleep).toggleStyle(MenuToggle()).padding(
-        [.top], vertical_padding)
-      Toggle("Prevent Idle Sleep", isOn: $canSystemIdleSleep).toggleStyle(MenuToggle())
-      Toggle("Prevent Disks from Idle Sleep", isOn: $canDiskIdleSleep).toggleStyle(MenuToggle())
-      Toggle("Keep System Awake on AC", isOn: $canSystemSleepOnAC).toggleStyle(MenuToggle())
+      Toggle("Prevent Display Sleep", isOn: $caffeinateController.canDisplaySleep).toggleStyle(MenuToggle()).padding([.top], vertical_padding)
+      Toggle("Prevent Idle Sleep", isOn: $caffeinateController.canSystemIdleSleep).toggleStyle(MenuToggle())
+      Toggle("Prevent Disks from Idle Sleep", isOn: $caffeinateController.canDiskIdleSleep).toggleStyle(MenuToggle())
+      Toggle("Keep System Awake on AC", isOn: $caffeinateController.canSystemSleepOnAC).toggleStyle(MenuToggle())
       Toggle("Enable on Startup", isOn: $enableOnStartup).toggleStyle(MenuToggle())
       // Toggle("Automatically Wake Computer", isOn: $preventSleep).toggleStyle(MenuToggle())
       // Toggle("Disable When Not on AC", isOn: $disableWhenNotOnAC).toggleStyle(MenuToggle())
