@@ -1,6 +1,6 @@
 # Barista
 
-A small tray frontend for macOS's `caffeinate`, a utility to keep your device awake.
+A small tray program for macOS to keep your device awake. A wrapper around the built-in `caffeinate` tool.
 
 Note: Barista currently does not replicate 100% of the features of `caffeinate`, though this may change in the future!
 
@@ -10,5 +10,6 @@ Note: Barista currently does not replicate 100% of the features of `caffeinate`,
 
 Download the DMG from the releases and install it. You can then run it by running Barista.
 
-To activate it, just toggle the "Enable Barista" slider. Turn it off by toggling it back off. Use
-"Enable on Startup" to activate it automatically whenever Barista starts.
+- To activate it, just toggle the "Enable Barista" slider, and turn it off by toggling it back off.
+- Use "Enable on Startup" to activate it automatically whenever Barista starts.
+- Select the options you want to control what capabilities of `caffeinate` to activate. For details, run `man caffeinate`.
